@@ -10,6 +10,7 @@ from itertools import groupby
 
 from six import add_metaclass, integer_types, iteritems, string_types, text_type
 from six.moves import range, zip_longest
+import numpy_financial as npf
 
 from efc.rpn_builder.parser.operands import (
     BadReference,
@@ -904,6 +905,19 @@ def column_func(op):
     else:
         raise ValueErrorOperand
 
+#add npv function
+def npv_func(rate, *args):
+    #get list of cash flows
+    cash_flows = list(iter_digits(*args))
+    #get  value of rate
+    rate = float(rate)
+    return npf.npv(rate, cash_flows)
+
+#add irr function
+def irr_func(cash_flows):
+    cash_flows = list(iter_digits(cash_flows))
+    #cash_flows = np.array(cash_flows)
+    return npf.irr(cash_flows)
 
 COMPARE_FUNCTIONS = {
     '<>': compare_not_eq_func,
@@ -988,3 +1002,7 @@ EXCEL_FUNCTIONS['VLOOKUP'] = vlookup_function
 
 EXCEL_FUNCTIONS['YEARFRAC'] = year_frac
 EXCEL_FUNCTIONS['UPPER'] = upper_func
+
+#add npv and irr functions
+EXCEL_FUNCTIONS['NPV'] = npv_func
+EXCEL_FUNCTIONS['IRR'] = irr_func
